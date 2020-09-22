@@ -1,0 +1,41 @@
+version: "3"
+
+networks:
+  elastic:
+    name: ${NETWORK_NAME}
+    driver: ${NETWORK_DRIVER}
+
+services:
+  elasticsearch:
+    container_name: ${ELASTICSEARCH_CONTAINER_NAME}
+    hostname: ${ELASTICSEARCH_HOSTNAME}
+    image: elasticsearch:${ELASTICSEARCH_VERSION}
+    volumes:
+      - ${ELASTICSEARCH_DATA_MOUNT}:/usr/share/elasticsearch/data
+      - ${ELASTICSEARCH_LOGS_MOUNT}:/usr/share/elasticsearch/logs
+      - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - elastic
+    ports:
+      - "${ELASTICSEARCH_BIND_PORT}:9200"
+    environment:
+      - discovery.type=single-node
+      - network.bind_host=${ELASTICSEARCH_BIND_ADDRESS},${ELASTICSEARCH_HOSTNAME}
+    restart: ${ELASTICSEARCH_RESTART_POLICY}
+
+  kibana:
+    container_name: ${KIBANA_CONTAINER_NAME}
+    hostname: ${KIBANA_HOSTNAME}
+    image: kibana:${KIBANA_VERSION}
+    volumes:
+      - ./conf/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - elastic
+    ports:
+      - "${KIBANA_BIND_PORT}:5601"
+    environment:
+      - ELASTICSEARCH_HOSTNAME=${ELASTICSEARCH_HOSTNAME}
+      - KIBANA_BIND_ADDRESS=${KIBANA_BIND_ADDRESS}
+    restart: ${KIBANA_RESTART_POLICY}
+    depends_on:
+      - elasticsearch
