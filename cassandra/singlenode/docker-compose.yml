@@ -9,7 +9,7 @@ services:
   cassandra:
     container_name: ${CASS_CONTAINER_NAME}
     hostname: ${CASS_HOSTNAME}
-    image: bitname/cassandra
+    image: bitnami/cassandra
     restart: ${CASS_RESTART_POLICY}
     volumes:
       - ${CASS_DATA_MOUNT}:/bitnami/cassandra
