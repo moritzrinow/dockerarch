@@ -1,0 +1,22 @@
+version: "3"
+
+networks:
+  cassandra:
+    driver: ${NETWORK_DRIVER}
+    name: ${NETWORK_NAME}
+
+services:
+  cassandra:
+    container_name: ${CASS_CONTAINER_NAME}
+    hostname: ${CASS_HOSTNAME}
+    image: bitname/cassandra
+    restart: ${CASS_RESTART_POLICY}
+    volumes:
+      - ${CASS_DATA_MOUNT}:/bitnami/cassandra
+      - ./conf/cassandra.yml:/bitnami/cassandra/conf/cassandra.yml
+    networks:
+      - cassandra
+    ports:
+      - "${CASS_BIND_PORT}:9042"
+    environment:
+      - CASSANDRA_SEEDS=${CASS_HOSTNAME}

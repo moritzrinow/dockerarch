@@ -1,0 +1,40 @@
+version: "3"
+
+networks:
+  kafka:
+    driver: ${NETWORK_DRIVER}
+    name: ${NETWORK_NAME}
+
+services:
+  zookeeper:
+    container_name: ${ZOOKEEPER_CONTAINER_NAME}
+    hostname: ${ZOOKEEPER_HOSTNAME}
+    image: bitnami/zookeeper:latest
+    volumes:
+      - ${ZOOKEEPER_DATA_MOUNT}:/bitnami/zookeeper
+    networks:
+      - kafka
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    restart: ${ZOOKEEPER_RESTART_POLICY}
+  
+  kafka:
+    container_name: ${KAFKA_CONTAINER_NAME}
+    hostname: ${KAFKA_HOSTNAME}
+    image: bitnami/kafka:latest
+    volumes:
+      - ${KAFKA_DATA_MOUNT}:/bitnami/kafka
+    networks:
+      - kafka
+    ports:
+      - "${KAFKA_BIND_PORT}:9092"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=${ZOOKEEPER_HOSTNAME}:2181
+      - KAFKA_LISTENERS=INTERNAL://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=INTERNAL://${KAFKA_HOSTNAME}:9093,EXTERNAL://localhost:9092
+      - KAFKA_INTER_BROKER_LISTENER_NAME=INTERNAL
+    restart: ${KAFKA_RESTART_POLICY}
+    depends_on:
+      - zookeeper
