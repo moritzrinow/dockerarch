@@ -4,6 +4,10 @@ networks:
   cassandra:
     driver: ${NETWORK_DRIVER}
     name: ${NETWORK_NAME}
+    
+volumes:
+  cassandra:
+    name: cassandra
 
 services:
   cassandra:
@@ -12,7 +16,7 @@ services:
     image: bitnami/cassandra
     restart: ${CASS_RESTART_POLICY}
     volumes:
-      - ${CASS_DATA_MOUNT}:/bitnami/cassandra
+      - cassandra:/bitnami/cassandra
       - ./conf/cassandra.yml:/bitnami/cassandra/conf/cassandra.yml
     networks:
       - cassandra

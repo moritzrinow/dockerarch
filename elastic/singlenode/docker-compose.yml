@@ -4,6 +4,12 @@ networks:
   elastic:
     name: ${NETWORK_NAME}
     driver: ${NETWORK_DRIVER}
+    
+volumes:
+  elasticsearch-data:
+    name: elasticsearch-data
+  elasticsearch-logs:
+    name: elasticsearch-logs
 
 services:
   elasticsearch:
@@ -11,8 +17,8 @@ services:
     hostname: ${ELASTICSEARCH_HOSTNAME}
     image: elasticsearch:${ELASTICSEARCH_VERSION}
     volumes:
-      - ${ELASTICSEARCH_DATA_MOUNT}:/usr/share/elasticsearch/data
-      - ${ELASTICSEARCH_LOGS_MOUNT}:/usr/share/elasticsearch/logs
+      - elasticsearch-data:/usr/share/elasticsearch/data
+      - elasticsearch-logs:/usr/share/elasticsearch/logs
       - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - elastic

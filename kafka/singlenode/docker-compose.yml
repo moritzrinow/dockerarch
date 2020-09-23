@@ -4,14 +4,20 @@ networks:
   kafka:
     driver: ${NETWORK_DRIVER}
     name: ${NETWORK_NAME}
-
+    
+volumes:
+  kafka:
+    name: kafka
+  zookeeper:
+    name: zookeeper
+    
 services:
   zookeeper:
     container_name: ${ZOOKEEPER_CONTAINER_NAME}
     hostname: ${ZOOKEEPER_HOSTNAME}
     image: bitnami/zookeeper:latest
     volumes:
-      - ${ZOOKEEPER_DATA_MOUNT}:/bitnami/zookeeper
+      - zookeeper:/bitnami/zookeeper
     networks:
       - kafka
     environment:
@@ -23,7 +29,7 @@ services:
     hostname: ${KAFKA_HOSTNAME}
     image: bitnami/kafka:latest
     volumes:
-      - ${KAFKA_DATA_MOUNT}:/bitnami/kafka
+      - kafka:/bitnami/kafka
     networks:
       - kafka
     ports:
